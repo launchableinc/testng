@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.logging.Logger;
 import org.kohsuke.MetaInfServices;
 import org.testng.IMethodInstance;
 import org.testng.IMethodInterceptor;
@@ -21,9 +22,10 @@ public class TestSelector implements IMethodInterceptor {
 	private String LAUNCHABLE_SUBSET_FILE = "LAUNCHABLE_SUBSET_FILE_PATH";
 	private String launchableDefaultSubsetFilePath = "subset.txt";
 
+	private static final Logger logger = Logger.getLogger(TestSelector.class.getName());
+
 	@Override
 	public List<IMethodInstance> intercept(List<IMethodInstance> methods, ITestContext iTestContext) {
-
 		String subsetFilePath =
 				System.getenv(LAUNCHABLE_SUBSET_FILE) == null ? launchableDefaultSubsetFilePath
 						: System.getenv(LAUNCHABLE_SUBSET_FILE);
@@ -35,10 +37,9 @@ public class TestSelector implements IMethodInterceptor {
 				subsetList.put(l, l);
 			}
 		} catch (FileNotFoundException e) {
-			// TODO: use logger
-			System.out.printf(
-					"WARNING: Can not read file %s. Make sure to set subset result file path to env LAUNCHABLE_SUBST_FILE_PATH %n",
-					launchableDefaultSubsetFilePath);
+			logger.warning(String.format(
+					"Can not read subset file %s. Make sure to set subset result file path to LAUNCHABLE_SUBST_FILE_PATH",
+					launchableDefaultSubsetFilePath));
 		}
 
 		Iterator<IMethodInstance> itr = methods.iterator();
