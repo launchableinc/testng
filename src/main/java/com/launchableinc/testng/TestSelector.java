@@ -38,8 +38,8 @@ public class TestSelector implements IMethodInterceptor {
 			}
 		} catch (FileNotFoundException e) {
 			LOGGER.warning(String.format(
-					"Can not read subset file %s. Make sure to set subset result file path to LAUNCHABLE_SUBST_FILE_PATH",
-					LAUNCHABLE_DEFAULT_SUBSET_FILE_PATH));
+					"Can not read subset file %s. Make sure to set subset result file path to %s",
+					LAUNCHABLE_DEFAULT_SUBSET_FILE_PATH, LAUNCHABLE_SUBSET_FILE));
 		}
 
 		Iterator<IMethodInstance> itr = methods.iterator();
