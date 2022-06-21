@@ -20,7 +20,6 @@ import java.util.List;
 public class TestSelector implements IMethodInterceptor {
 
 	public static final String LAUNCHABLE_SUBSET_FILE = "LAUNCHABLE_SUBSET_FILE_PATH";
-	private static final String LAUNCHABLE_DEFAULT_SUBSET_FILE_PATH = "subset.txt";
 
 	private static final Logger LOGGER = Logger.getLogger(TestSelector.class.getName());
 
@@ -33,7 +32,8 @@ public class TestSelector implements IMethodInterceptor {
 		Set<String> subsetList = new HashSet<>();
 
 		if (System.getenv(LAUNCHABLE_SUBSET_FILE) != null) {
-			try (Scanner scanner = new Scanner(new FileReader(System.getenv(LAUNCHABLE_SUBSET_FILE)))) {
+			String file = System.getenv(LAUNCHABLE_SUBSET_FILE);
+			try (Scanner scanner = new Scanner(new FileReader(file))) {
 				while (scanner.hasNext()) {
 
 					String l = scanner.nextLine();
@@ -42,12 +42,12 @@ public class TestSelector implements IMethodInterceptor {
 			} catch (FileNotFoundException e) {
 				LOGGER.warning(String.format(
 						"Can not read subset file %s. Make sure to set subset result file path to %s",
-						LAUNCHABLE_DEFAULT_SUBSET_FILE_PATH, LAUNCHABLE_SUBSET_FILE));
+						file, LAUNCHABLE_SUBSET_FILE));
 			}
 
 			if (subsetList.isEmpty()) {
 				LOGGER.warning(String.format("Subset file %s is empty. Please check your configuration",
-						LAUNCHABLE_DEFAULT_SUBSET_FILE_PATH));
+						file));
 			}
 		}
 
