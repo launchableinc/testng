@@ -51,6 +51,44 @@ public class TestSelectorTest {
 	}
 
 	@Test
+	public void intercept_set_subset_multiple_list() throws IOException {
+		File file = File.createTempFile("subset-", ".txt");
+		Files.write(file.toPath(),
+				"com.launchableinc.testng.Example1Test\ncom.launchableinc.testng.Example2Test".getBytes(StandardCharsets.UTF_8));
+		setEnv(TestSelector.LAUNCHABLE_SUBSET_FILE, file.getPath());
+
+		TestSelector selector = new TestSelector();
+
+		TestNG tng = createTests("set-subset-list", Example1Test.class, Example2Test.class,
+				Example3Test.class);
+		tng.addListener(selector);
+		tng.run();
+		Assert.assertEquals(selector.getTotalTestCount(), 9);
+		Assert.assertEquals(selector.getFilteredCount(), 6);
+
+		file.deleteOnExit();
+	}
+
+	@Test
+	public void intercept_set_no_available_test_path() throws IOException {
+		File file = File.createTempFile("subset-", ".txt");
+		Files.write(file.toPath(),
+				"com.launchableinc.testng.Sample1Test\ncom.launchableinc.testng.Sample2Test\ncom.launchableinc.testok.Example1Test".getBytes(StandardCharsets.UTF_8));
+		setEnv(TestSelector.LAUNCHABLE_SUBSET_FILE, file.getPath());
+
+		TestSelector selector = new TestSelector();
+
+		TestNG tng = createTests("set-subset-list", Example1Test.class, Example2Test.class,
+				Example3Test.class);
+		tng.addListener(selector);
+		tng.run();
+		Assert.assertEquals(selector.getTotalTestCount(), 9);
+		Assert.assertEquals(selector.getFilteredCount(), 0);
+
+		file.deleteOnExit();
+	}
+
+	@Test
 	public void intercept_set_not_exists_subset_file_path() throws IOException {
 		setEnv(TestSelector.LAUNCHABLE_SUBSET_FILE, "invalid_subset_file.txt");
 
