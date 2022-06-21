@@ -19,37 +19,56 @@ import java.util.List;
 @MetaInfServices(ITestNGListener.class)
 public class TestSelector implements IMethodInterceptor {
 
-	private static String LAUNCHABLE_SUBSET_FILE = "LAUNCHABLE_SUBSET_FILE_PATH";
-	private static String LAUNCHABLE_DEFAULT_SUBSET_FILE_PATH = "subset.txt";
+	public static final String LAUNCHABLE_SUBSET_FILE = "LAUNCHABLE_SUBSET_FILE_PATH";
+	private static final String LAUNCHABLE_DEFAULT_SUBSET_FILE_PATH = "subset.txt";
 
 	private static final Logger LOGGER = Logger.getLogger(TestSelector.class.getName());
 
+	private int totalTestCount = 0;
+
+	private int filteredCount = 0;
+
 	@Override
 	public List<IMethodInstance> intercept(List<IMethodInstance> methods, ITestContext iTestContext) {
-		String subsetFilePath =
-				System.getenv(LAUNCHABLE_SUBSET_FILE) == null ? LAUNCHABLE_DEFAULT_SUBSET_FILE_PATH
-						: System.getenv(LAUNCHABLE_SUBSET_FILE);
-
 		Set<String> subsetList = new HashSet<>();
-		try (Scanner scanner = new Scanner(new FileReader(subsetFilePath))) {
-			while (scanner.hasNext()) {
-				String l = scanner.nextLine();
-				subsetList.add(l);
+
+		if (System.getenv(LAUNCHABLE_SUBSET_FILE) != null) {
+			try (Scanner scanner = new Scanner(new FileReader(System.getenv(LAUNCHABLE_SUBSET_FILE)))) {
+				while (scanner.hasNext()) {
+
+					String l = scanner.nextLine();
+					subsetList.add(l);
+				}
+			} catch (FileNotFoundException e) {
+				LOGGER.warning(String.format(
+						"Can not read subset file %s. Make sure to set subset result file path to %s",
+						LAUNCHABLE_DEFAULT_SUBSET_FILE_PATH, LAUNCHABLE_SUBSET_FILE));
 			}
-		} catch (FileNotFoundException e) {
-			LOGGER.warning(String.format(
-					"Can not read subset file %s. Make sure to set subset result file path to %s",
-					LAUNCHABLE_DEFAULT_SUBSET_FILE_PATH, LAUNCHABLE_SUBSET_FILE));
+
+			if (subsetList.isEmpty()) {
+				LOGGER.warning(String.format("Subset file %s is empty. Please check your configuration",
+						LAUNCHABLE_DEFAULT_SUBSET_FILE_PATH));
+			}
 		}
 
 		Iterator<IMethodInstance> itr = methods.iterator();
 		while (itr.hasNext()) {
 			IMethodInstance m = itr.next();
+			totalTestCount++;
 			if (subsetList.contains(m.getMethod().getTestClass().getName())) {
 				itr.remove();
+				filteredCount++;
 			}
 		}
 
 		return methods;
+	}
+
+	public int getTotalTestCount() {
+		return totalTestCount;
+	}
+
+	public int getFilteredCount() {
+		return filteredCount;
 	}
 }
