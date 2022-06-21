@@ -104,7 +104,7 @@ public class TestSelectorTest {
 
 		TestNG result = new TestNG();
 		result.setUseDefaultListeners(false);
-		result.setVerbose(1);
+		result.setVerbose(0);
 		result.setXmlSuites(Collections.singletonList(suite));
 
 		return result;
