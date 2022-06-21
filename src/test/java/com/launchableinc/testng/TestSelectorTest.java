@@ -82,7 +82,7 @@ public class TestSelectorTest {
 		file.deleteOnExit();
 	}
 
-	public static void setEnv(String key, String value) {
+	private void setEnv(String key, String value) {
 		try {
 			Map<String, String> env = System.getenv();
 			Class<?> cl = env.getClass();
