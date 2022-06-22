@@ -9,6 +9,7 @@
 
   <name>launchable-testng</name>
   <url>https://launchableinc.com/</url>
+  <description>Launchable TestNG support</description>
 
   <scm>
     <connection>scm:git:git@github.com:launchableinc/testng.git</connection>
@@ -16,6 +17,14 @@
     <developerConnection>scm:git:git@github.com:launchableinc/testng.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
+
+  <developers>
+    <developer>
+      <name>Engineering</name>
+      <id>engineering</id>
+      <email>engineering@launchableinc.com</email>
+    </developer>
+  </developers>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
