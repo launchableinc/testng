@@ -43,6 +43,8 @@ public class TestSelector implements IMethodInterceptor {
 				LOGGER.warning(String.format(
 						"Can not read subset file %s. Make sure to set subset result file path to %s",
 						file, LAUNCHABLE_SUBSET_FILE));
+
+				return methods;
 			}
 
 			if (subsetList.isEmpty()) {
