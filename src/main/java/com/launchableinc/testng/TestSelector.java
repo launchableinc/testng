@@ -23,33 +23,32 @@ public class TestSelector implements IMethodInterceptor {
 
 	private static final Logger LOGGER = Logger.getLogger(TestSelector.class.getName());
 
-	/*package*/  int totalTestCount = 0;
+	/*package*/ int totalTestCount = 0;
 
-	/*package*/  int filteredCount = 0;
+	/*package*/ int filteredCount = 0;
 
 	@Override
 	public List<IMethodInstance> intercept(List<IMethodInstance> methods, ITestContext iTestContext) {
 		Set<String> subsetList = new HashSet<>();
 
-		if (System.getenv(LAUNCHABLE_SUBSET_FILE) != null) {
-			String file = System.getenv(LAUNCHABLE_SUBSET_FILE);
-			try (Scanner scanner = new Scanner(new FileReader(file))) {
+		String subsetFile = System.getenv(LAUNCHABLE_SUBSET_FILE);
+		if (subsetFile != null) {
+			try (Scanner scanner = new Scanner(new FileReader(subsetFile))) {
 				while (scanner.hasNext()) {
-
 					String l = scanner.nextLine();
 					subsetList.add(l);
 				}
 			} catch (FileNotFoundException e) {
 				LOGGER.warning(String.format(
 						"Can not read subset file %s. Make sure to set subset result file path to %s",
-						file, LAUNCHABLE_SUBSET_FILE));
+						subsetFile, LAUNCHABLE_SUBSET_FILE));
 
 				return methods;
 			}
 
 			if (subsetList.isEmpty()) {
 				LOGGER.warning(String.format("Subset file %s is empty. Please check your configuration",
-						file));
+						subsetFile));
 			}
 		}
 
