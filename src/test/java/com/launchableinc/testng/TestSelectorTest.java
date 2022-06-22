@@ -26,8 +26,8 @@ public class TestSelectorTest {
 				Example3Test.class);
 		tng.addListener(selector);
 		tng.run();
-		Assert.assertEquals(selector.getTotalTestCount(), 9);
-		Assert.assertEquals(selector.getFilteredCount(), 0);
+		Assert.assertEquals(selector.totalTestCount, 9);
+		Assert.assertEquals(selector.filteredCount, 0);
 	}
 
 
@@ -44,8 +44,8 @@ public class TestSelectorTest {
 				Example3Test.class);
 		tng.addListener(selector);
 		tng.run();
-		Assert.assertEquals(selector.getTotalTestCount(), 9);
-		Assert.assertEquals(selector.getFilteredCount(), 2);
+		Assert.assertEquals(selector.totalTestCount, 9);
+		Assert.assertEquals(selector.filteredCount, 2);
 
 		file.deleteOnExit();
 	}
@@ -54,7 +54,8 @@ public class TestSelectorTest {
 	public void intercept_set_subset_multiple_list() throws IOException {
 		File file = File.createTempFile("subset-", ".txt");
 		Files.write(file.toPath(),
-				"com.launchableinc.testng.Example1Test\ncom.launchableinc.testng.Example2Test".getBytes(StandardCharsets.UTF_8));
+				"com.launchableinc.testng.Example1Test\ncom.launchableinc.testng.Example2Test".getBytes(
+						StandardCharsets.UTF_8));
 		setEnv(TestSelector.LAUNCHABLE_SUBSET_FILE, file.getPath());
 
 		TestSelector selector = new TestSelector();
@@ -63,8 +64,8 @@ public class TestSelectorTest {
 				Example3Test.class);
 		tng.addListener(selector);
 		tng.run();
-		Assert.assertEquals(selector.getTotalTestCount(), 9);
-		Assert.assertEquals(selector.getFilteredCount(), 6);
+		Assert.assertEquals(selector.totalTestCount, 9);
+		Assert.assertEquals(selector.filteredCount, 6);
 
 		file.deleteOnExit();
 	}
@@ -73,7 +74,8 @@ public class TestSelectorTest {
 	public void intercept_set_no_available_test_path() throws IOException {
 		File file = File.createTempFile("subset-", ".txt");
 		Files.write(file.toPath(),
-				"com.launchableinc.testng.Sample1Test\ncom.launchableinc.testng.Sample2Test\ncom.launchableinc.testok.Example1Test".getBytes(StandardCharsets.UTF_8));
+				"com.launchableinc.testng.Sample1Test\ncom.launchableinc.testng.Sample2Test\ncom.launchableinc.testok.Example1Test".getBytes(
+						StandardCharsets.UTF_8));
 		setEnv(TestSelector.LAUNCHABLE_SUBSET_FILE, file.getPath());
 
 		TestSelector selector = new TestSelector();
@@ -82,8 +84,8 @@ public class TestSelectorTest {
 				Example3Test.class);
 		tng.addListener(selector);
 		tng.run();
-		Assert.assertEquals(selector.getTotalTestCount(), 9);
-		Assert.assertEquals(selector.getFilteredCount(), 0);
+		Assert.assertEquals(selector.totalTestCount, 9);
+		Assert.assertEquals(selector.filteredCount, 0);
 
 		file.deleteOnExit();
 	}
@@ -98,8 +100,9 @@ public class TestSelectorTest {
 				Example3Test.class);
 		tng.addListener(selector);
 		tng.run();
-		Assert.assertEquals(selector.getTotalTestCount(), 9);
-		Assert.assertEquals(selector.getFilteredCount(), 0);
+		// If subset file doesn't exist, selector will return the inputted methods as is.
+		Assert.assertEquals(selector.totalTestCount, 0);
+		Assert.assertEquals(selector.filteredCount, 0);
 	}
 
 	@Test
@@ -114,8 +117,9 @@ public class TestSelectorTest {
 				Example3Test.class);
 		tng.addListener(selector);
 		tng.run();
-		Assert.assertEquals(selector.getTotalTestCount(), 9);
-		Assert.assertEquals(selector.getFilteredCount(), 0);
+
+		Assert.assertEquals(selector.totalTestCount, 9);
+		Assert.assertEquals(selector.filteredCount, 0);
 
 		file.deleteOnExit();
 	}
@@ -144,7 +148,6 @@ public class TestSelectorTest {
 		result.setUseDefaultListeners(false);
 		result.setVerbose(0);
 		result.setXmlSuites(Collections.singletonList(suite));
-
 		return result;
 	}
 

@@ -23,9 +23,9 @@ public class TestSelector implements IMethodInterceptor {
 
 	private static final Logger LOGGER = Logger.getLogger(TestSelector.class.getName());
 
-	private int totalTestCount = 0;
+	/*package*/  int totalTestCount = 0;
 
-	private int filteredCount = 0;
+	/*package*/  int filteredCount = 0;
 
 	@Override
 	public List<IMethodInstance> intercept(List<IMethodInstance> methods, ITestContext iTestContext) {
@@ -62,13 +62,5 @@ public class TestSelector implements IMethodInterceptor {
 		}
 
 		return methods;
-	}
-
-	public int getTotalTestCount() {
-		return totalTestCount;
-	}
-
-	public int getFilteredCount() {
-		return filteredCount;
 	}
 }
