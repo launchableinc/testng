@@ -9,7 +9,7 @@ test selector for TestNG
 $ launchable subset --target 30% maven src/test/java > subset.txt
 
 # set subset result file path to ENV
-$ export LAUNCHABLE_SUBSET_FILE=subset.txt
+$ export LAUNCHABLE_SUBSET_FILE_PATH=subset.txt
 
 # run tests
 $ mvn test
