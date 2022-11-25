@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.Map;
 import org.testng.Assert;
 import org.testng.TestNG;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
