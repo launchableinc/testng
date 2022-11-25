@@ -56,7 +56,7 @@ public class TestSelector implements IMethodInterceptor {
 		while (itr.hasNext()) {
 			IMethodInstance m = itr.next();
 			totalTestCount++;
-			if (subsetList.contains(m.getMethod().getTestClass().getName())) {
+			if (subsetFile != null && !subsetList.contains(m.getMethod().getTestClass().getName())) {
 				itr.remove();
 				filteredCount++;
 			}

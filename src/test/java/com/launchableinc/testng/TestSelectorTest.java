@@ -45,7 +45,7 @@ public class TestSelectorTest {
 		tng.addListener(selector);
 		tng.run();
 		Assert.assertEquals(selector.totalTestCount, 9);
-		Assert.assertEquals(selector.filteredCount, 2);
+		Assert.assertEquals(selector.filteredCount, 7);
 
 		file.deleteOnExit();
 	}
@@ -65,7 +65,7 @@ public class TestSelectorTest {
 		tng.addListener(selector);
 		tng.run();
 		Assert.assertEquals(selector.totalTestCount, 9);
-		Assert.assertEquals(selector.filteredCount, 6);
+		Assert.assertEquals(selector.filteredCount, 3);
 
 		file.deleteOnExit();
 	}
@@ -85,7 +85,7 @@ public class TestSelectorTest {
 		tng.addListener(selector);
 		tng.run();
 		Assert.assertEquals(selector.totalTestCount, 9);
-		Assert.assertEquals(selector.filteredCount, 0);
+		Assert.assertEquals(selector.filteredCount, 9);
 
 		file.deleteOnExit();
 	}
@@ -119,7 +119,7 @@ public class TestSelectorTest {
 		tng.run();
 
 		Assert.assertEquals(selector.totalTestCount, 9);
-		Assert.assertEquals(selector.filteredCount, 0);
+		Assert.assertEquals(selector.filteredCount, 9);
 
 		file.deleteOnExit();
 	}
