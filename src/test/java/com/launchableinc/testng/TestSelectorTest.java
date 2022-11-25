@@ -14,6 +14,9 @@ import org.testng.annotations.Test;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
+import static com.github.stefanbirkner.systemlambda.SystemLambda.withEnvironmentVariable;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNull;
 
 public class TestSelectorTest {
 
@@ -26,117 +29,108 @@ public class TestSelectorTest {
 				Example3Test.class);
 		tng.addListener(selector);
 		tng.run();
-		Assert.assertEquals(selector.totalTestCount, 9);
-		Assert.assertEquals(selector.filteredCount, 0);
+		assertEquals(selector.totalTestCount, 9);
+		assertEquals(selector.filteredCount, 0);
 	}
 
 
 	@Test
-	public void intercept_set_subset_list() throws IOException {
+	public void intercept_set_subset_list() throws Exception {
 		File file = File.createTempFile("subset-", ".txt");
+		file.deleteOnExit();
+
 		Files.write(file.toPath(),
 				"com.launchableinc.testng.Example1Test".getBytes(StandardCharsets.UTF_8));
-		setEnv(TestSelector.LAUNCHABLE_SUBSET_FILE, file.getPath());
 
-		TestSelector selector = new TestSelector();
+		assertNull(System.getenv(TestSelector.LAUNCHABLE_SUBSET_FILE));
+		withEnvironmentVariable(TestSelector.LAUNCHABLE_SUBSET_FILE, file.getPath()).execute(() -> {
+			TestSelector selector = new TestSelector();
+			TestNG tng = createTests("set-subset-list", Example1Test.class, Example2Test.class,
+					Example3Test.class);
+			tng.addListener(selector);
+			tng.run();
+			assertEquals(selector.totalTestCount, 9);
+			assertEquals(selector.filteredCount, 7);
+		});
 
-		TestNG tng = createTests("set-subset-list", Example1Test.class, Example2Test.class,
-				Example3Test.class);
-		tng.addListener(selector);
-		tng.run();
-		Assert.assertEquals(selector.totalTestCount, 9);
-		Assert.assertEquals(selector.filteredCount, 7);
-
-		file.deleteOnExit();
 	}
 
 	@Test
-	public void intercept_set_subset_multiple_list() throws IOException {
+	public void intercept_set_subset_multiple_list() throws Exception {
+		File file = File.createTempFile("subset-", ".txt");
+		file.deleteOnExit();
+		Files.write(file.toPath(),
+				"com.launchableinc.testng.Example1Test\ncom.launchableinc.testng.Example2Test"
+						.getBytes(StandardCharsets.UTF_8));
+
+		assertNull(System.getenv(TestSelector.LAUNCHABLE_SUBSET_FILE));
+		withEnvironmentVariable(TestSelector.LAUNCHABLE_SUBSET_FILE, file.getPath()).execute(() -> {
+			TestSelector selector = new TestSelector();
+			TestNG tng =
+					createTests("set-subset-list", Example1Test.class, Example2Test.class,
+							Example3Test.class);
+			tng.addListener(selector);
+			tng.run();
+			assertEquals(selector.totalTestCount, 9);
+			assertEquals(selector.filteredCount, 3);
+		});
+	}
+
+	@Test
+	public void intercept_set_no_available_test_path() throws Exception {
 		File file = File.createTempFile("subset-", ".txt");
 		Files.write(file.toPath(),
-				"com.launchableinc.testng.Example1Test\ncom.launchableinc.testng.Example2Test".getBytes(
-						StandardCharsets.UTF_8));
-		setEnv(TestSelector.LAUNCHABLE_SUBSET_FILE, file.getPath());
+				"com.launchableinc.testng.Sample1Test\ncom.launchableinc.testng.Sample2Test\ncom.launchableinc.testok.Example1Test"
+						.getBytes(StandardCharsets.UTF_8));
 
-		TestSelector selector = new TestSelector();
-
-		TestNG tng = createTests("set-subset-list", Example1Test.class, Example2Test.class,
-				Example3Test.class);
-		tng.addListener(selector);
-		tng.run();
-		Assert.assertEquals(selector.totalTestCount, 9);
-		Assert.assertEquals(selector.filteredCount, 3);
-
-		file.deleteOnExit();
-	}
-
-	@Test
-	public void intercept_set_no_available_test_path() throws IOException {
-		File file = File.createTempFile("subset-", ".txt");
-		Files.write(file.toPath(),
-				"com.launchableinc.testng.Sample1Test\ncom.launchableinc.testng.Sample2Test\ncom.launchableinc.testok.Example1Test".getBytes(
-						StandardCharsets.UTF_8));
-		setEnv(TestSelector.LAUNCHABLE_SUBSET_FILE, file.getPath());
-
-		TestSelector selector = new TestSelector();
-
-		TestNG tng = createTests("set-subset-list", Example1Test.class, Example2Test.class,
-				Example3Test.class);
-		tng.addListener(selector);
-		tng.run();
-		Assert.assertEquals(selector.totalTestCount, 9);
-		Assert.assertEquals(selector.filteredCount, 9);
+		assertNull(System.getenv(TestSelector.LAUNCHABLE_SUBSET_FILE));
+		withEnvironmentVariable(TestSelector.LAUNCHABLE_SUBSET_FILE, file.getPath()).execute(() -> {
+					TestSelector selector = new TestSelector();
+					TestNG tng =
+							createTests("set-subset-list", Example1Test.class, Example2Test.class,
+									Example3Test.class);
+					tng.addListener(selector);
+					tng.run();
+					assertEquals(selector.totalTestCount, 9);
+					assertEquals(selector.filteredCount, 9);
+		});
 
 		file.deleteOnExit();
 	}
 
 	@Test
-	public void intercept_set_not_exists_subset_file_path() throws IOException {
-		setEnv(TestSelector.LAUNCHABLE_SUBSET_FILE, "invalid_subset_file.txt");
-
-		TestSelector selector = new TestSelector();
-
-		TestNG tng = createTests("invalid_subset_file.txt", Example1Test.class, Example2Test.class,
-				Example3Test.class);
-		tng.addListener(selector);
-		tng.run();
-		// If subset file doesn't exist, selector will return the inputted methods as is.
-		Assert.assertEquals(selector.totalTestCount, 0);
-		Assert.assertEquals(selector.filteredCount, 0);
+	public void intercept_set_not_exists_subset_file_path() throws Exception {
+		assertNull(System.getenv(TestSelector.LAUNCHABLE_SUBSET_FILE));
+		withEnvironmentVariable(TestSelector.LAUNCHABLE_SUBSET_FILE, "invalid_subset_file.txt").execute(() -> {
+			TestSelector selector = new TestSelector();
+			TestNG tng = createTests("invalid_subset_file.txt", Example1Test.class, Example2Test.class,
+					Example3Test.class);
+			tng.addListener(selector);
+			tng.run();
+			// If subset file doesn't exist, selector will return the inputted methods as is.
+			assertEquals(selector.totalTestCount, 0);
+			assertEquals(selector.filteredCount, 0);
+		});
 	}
 
 	@Test
-	public void intercept_set_empty_subset_file() throws IOException {
+	public void intercept_set_empty_subset_file() throws Exception {
 		File file = File.createTempFile("subset-", ".txt");
+		file.deleteOnExit();
 		Files.write(file.toPath(), "".getBytes(StandardCharsets.UTF_8));
-		setEnv(TestSelector.LAUNCHABLE_SUBSET_FILE, file.getPath());
 
-		TestSelector selector = new TestSelector();
+		assertNull(System.getenv(TestSelector.LAUNCHABLE_SUBSET_FILE));
+		withEnvironmentVariable(TestSelector.LAUNCHABLE_SUBSET_FILE, file.getPath()).execute(() -> {
+			TestSelector selector = new TestSelector();
+			TestNG tng = createTests("invalid_subset_file.txt", Example1Test.class, Example2Test.class,
+					Example3Test.class);
+			tng.addListener(selector);
+			tng.run();
 
-		TestNG tng = createTests("invalid_subset_file.txt", Example1Test.class, Example2Test.class,
-				Example3Test.class);
-		tng.addListener(selector);
-		tng.run();
-
-		Assert.assertEquals(selector.totalTestCount, 9);
-		Assert.assertEquals(selector.filteredCount, 9);
-
-		file.deleteOnExit();
+			assertEquals(selector.totalTestCount, 9);
+			assertEquals(selector.filteredCount, 9);
+		});
 	}
-
-	private void setEnv(String key, String value) {
-		try {
-			Map<String, String> env = System.getenv();
-			Class<?> cl = env.getClass();
-			Field field = cl.getDeclaredField("m");
-			field.setAccessible(true);
-			Map<String, String> writableEnv = (Map<String, String>) field.get(env);
-			writableEnv.put(key, value);
-		} catch (Exception e) {
-			throw new IllegalStateException("Failed to set environment variable", e);
-		}
-	}
-
 
 	private TestNG createTests(String suiteName, Class<?>... testClasses) {
 		XmlSuite suite = createXmlSuite(suiteName);
