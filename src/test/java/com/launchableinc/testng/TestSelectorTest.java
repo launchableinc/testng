@@ -139,8 +139,8 @@ public class TestSelectorTest {
 							Example3Test.class);
 			tng.addListener(selector);
 			tng.run();
-			assertEquals(selector.totalTestCount, 9);
-			assertEquals(selector.filteredCount, 5);
+			assertEquals(selector.totalTestCount, 0);
+			assertEquals(selector.filteredCount, 0);
 		});
 	}
 

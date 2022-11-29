@@ -37,12 +37,17 @@ public class TestSelector implements IMethodInterceptor {
 		String subsetFile = System.getenv(LAUNCHABLE_SUBSET_FILE);
 		String restFile = System.getenv(LAUNCHABLE_REST_FILE);
 
+		if (subsetFile != null && restFile != null) {
+			LOGGER.warning(String.format("ERROR: Cannot set subset file (%s) and rest file (%s) both. Make sure set only one side.", subsetFile, restFile));
+			return methods;
+		}
+
 		if (subsetFile != null) {
 			try {
 				subsetList = readFromFile(subsetFile);
 			} catch (FileNotFoundException e) {
 				LOGGER.warning(String.format(
-						"Can not read subset file %s. Make sure to set subset result file path to %s",
+						"Cannot read subset file %s. Make sure to set subset result file path to %s",
 						subsetFile, LAUNCHABLE_SUBSET_FILE));
 				return methods;
 			}
@@ -52,14 +57,12 @@ public class TestSelector implements IMethodInterceptor {
 				LOGGER.warning(String.format("Subset file %s is empty. Please check your configuration",
 						subsetFile));
 			}
-		}
-
-		if (restFile != null) {
+		} else if (restFile != null) {
 			try {
 				restList = readFromFile(restFile);
 			} catch (FileNotFoundException e) {
 				LOGGER.warning(String.format(
-						"Can not read rest file %s. Make sure to set rest result file path to %s",
+						"Cannot read rest file %s. Make sure to set rest result file path to %s",
 						restFile, LAUNCHABLE_REST_FILE));
 				return methods;
 			}
