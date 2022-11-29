@@ -47,11 +47,14 @@ public class TestSelector implements IMethodInterceptor {
 				return methods;
 			}
 
+			LOGGER.info(String.format("Subset file (%s) is loaded", subsetFile));
 			if (subsetList.isEmpty()) {
 				LOGGER.warning(String.format("Subset file %s is empty. Please check your configuration",
 						subsetFile));
 			}
-		} else if (restFile != null){
+		}
+
+		if (restFile != null) {
 			try {
 				restList = readFromFile(restFile);
 			} catch (FileNotFoundException e) {
@@ -61,6 +64,7 @@ public class TestSelector implements IMethodInterceptor {
 				return methods;
 			}
 
+			LOGGER.info(String.format("Rest file (%s) is loaded", restFile));
 			if (restList.isEmpty()) {
 				LOGGER.warning(String.format("Rest file %s is empty. Please check your configuration",
 						restFile));
@@ -73,12 +77,13 @@ public class TestSelector implements IMethodInterceptor {
 			String className = m.getMethod().getTestClass().getName();
 			totalTestCount++;
 
-			if (restFile != null && restList.contains(className)) {
+			if (subsetFile != null && !subsetList.contains(className)) {
 				itr.remove();
 				filteredCount++;
+				continue;
 			}
 
-			if (subsetFile != null && !subsetList.contains(className)) {
+			if (restFile != null && restList.contains(className)) {
 				itr.remove();
 				filteredCount++;
 			}
