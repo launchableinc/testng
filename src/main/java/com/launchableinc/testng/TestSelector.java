@@ -95,15 +95,13 @@ public class TestSelector implements IMethodInterceptor {
 		return methods;
 	}
 
-	private Set<String> readFromFile(String filePath ) throws FileNotFoundException {
+	private Set<String> readFromFile(String filePath) throws FileNotFoundException {
 		Set<String> list = new HashSet<>();
 		try (Scanner scanner = new Scanner(new FileReader(filePath))) {
 			while (scanner.hasNext()) {
 				String l = scanner.nextLine();
 				list.add(l);
 			}
-		} catch (Exception e) {
-			throw e;
 		}
 
 		return list;
