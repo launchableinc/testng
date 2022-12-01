@@ -1,6 +1,7 @@
 package com.launchableinc.testng;
 
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.HashSet;
@@ -25,20 +26,36 @@ public class TestSelector implements IMethodInterceptor {
 
 	private static final Logger LOGGER = Logger.getLogger(TestSelector.class.getName());
 
-	/*package*/ int totalTestCount = 0;
+	private final File subsetFile;
 
-	/*package*/ int filteredCount = 0;
+	private final File restFile;
+
+	/* package */ int totalTestCount = 0;
+
+	/* package */ int filteredCount = 0;
+
+	/* package */ public TestSelector(File subsetFile, File restFile) {
+		this.subsetFile = subsetFile;
+		this.restFile = restFile;
+	}
+
+	public TestSelector() {
+		this.subsetFile = System.getenv(LAUNCHABLE_SUBSET_FILE) == null ? null
+				: new File(System.getenv(LAUNCHABLE_SUBSET_FILE));
+
+		this.restFile = System.getenv(LAUNCHABLE_REST_FILE) == null ? null
+				: new File(System.getenv(LAUNCHABLE_REST_FILE));
+	}
 
 	@Override
 	public List<IMethodInstance> intercept(List<IMethodInstance> methods, ITestContext iTestContext) {
 		Set<String> subsetList = new HashSet<>();
 		Set<String> restList = new HashSet<>();
 
-		String subsetFile = System.getenv(LAUNCHABLE_SUBSET_FILE);
-		String restFile = System.getenv(LAUNCHABLE_REST_FILE);
-
-		if (subsetFile != null && restFile != null) {
-			LOGGER.warning(String.format("ERROR: Cannot set subset file (%s) and rest file (%s) both. Make sure set only one side.", subsetFile, restFile));
+		if (this.subsetFile != null && this.restFile != null) {
+			LOGGER.warning(String.format(
+					"ERROR: Cannot set subset file (%s) and rest file (%s) both. Make sure set only one side.",
+					subsetFile, restFile));
 			return methods;
 		}
 
@@ -54,23 +71,23 @@ public class TestSelector implements IMethodInterceptor {
 
 			LOGGER.info(String.format("Subset file (%s) is loaded", subsetFile));
 			if (subsetList.isEmpty()) {
-				LOGGER.warning(String.format("Subset file %s is empty. Please check your configuration",
-						subsetFile));
+				LOGGER.warning(
+						String.format("Subset file %s is empty. Please check your configuration", subsetFile));
 			}
 		} else if (restFile != null) {
 			try {
 				restList = readFromFile(restFile);
 			} catch (FileNotFoundException e) {
-				LOGGER.warning(String.format(
-						"Cannot read rest file %s. Make sure to set rest result file path to %s",
-						restFile, LAUNCHABLE_REST_FILE));
+				LOGGER.warning(
+						String.format("Cannot read rest file %s. Make sure to set rest result file path to %s",
+								restFile, LAUNCHABLE_REST_FILE));
 				return methods;
 			}
 
 			LOGGER.info(String.format("Rest file (%s) is loaded", restFile));
 			if (restList.isEmpty()) {
-				LOGGER.warning(String.format("Rest file %s is empty. Please check your configuration",
-						restFile));
+				LOGGER.warning(
+						String.format("Rest file %s is empty. Please check your configuration", restFile));
 			}
 		}
 
@@ -95,9 +112,9 @@ public class TestSelector implements IMethodInterceptor {
 		return methods;
 	}
 
-	private Set<String> readFromFile(String filePath) throws FileNotFoundException {
+	private Set<String> readFromFile(File file) throws FileNotFoundException {
 		Set<String> list = new HashSet<>();
-		try (Scanner scanner = new Scanner(new FileReader(filePath))) {
+		try (Scanner scanner = new Scanner(new FileReader(file))) {
 			while (scanner.hasNext()) {
 				String l = scanner.nextLine();
 				list.add(l);
