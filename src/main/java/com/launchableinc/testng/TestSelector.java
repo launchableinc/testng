@@ -1,21 +1,22 @@
 package com.launchableinc.testng;
 
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.util.HashSet;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.logging.Logger;
 import org.kohsuke.MetaInfServices;
 import org.testng.IMethodInstance;
 import org.testng.IMethodInterceptor;
 import org.testng.ITestContext;
 import org.testng.ITestNGListener;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Scanner;
+import java.util.Set;
+import java.util.logging.Logger;
 
 @MetaInfServices(ITestNGListener.class)
 public class TestSelector implements IMethodInterceptor {
@@ -29,10 +30,6 @@ public class TestSelector implements IMethodInterceptor {
 	private final File subsetFile;
 
 	private final File restFile;
-
-	/* package */ int totalTestCount = 0;
-
-	/* package */ int filteredCount = 0;
 
 	/* package */ public TestSelector(File subsetFile, File restFile) {
 		this.subsetFile = subsetFile;
@@ -91,21 +88,21 @@ public class TestSelector implements IMethodInterceptor {
 			}
 		}
 
+		// we are going to mutate the list, so we need to make a copy.
+		// TestNG does appear to give us a read-only list sometimes.
+		methods = new ArrayList<>(methods);
 		Iterator<IMethodInstance> itr = methods.iterator();
 		while (itr.hasNext()) {
 			IMethodInstance m = itr.next();
 			String className = m.getMethod().getTestClass().getName();
-			totalTestCount++;
 
 			if (subsetFile != null && !subsetList.contains(className)) {
 				itr.remove();
-				filteredCount++;
 				continue;
 			}
 
 			if (restFile != null && restList.contains(className)) {
 				itr.remove();
-				filteredCount++;
 			}
 		}
 
